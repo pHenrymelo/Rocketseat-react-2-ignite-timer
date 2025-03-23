@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { Play } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { differenceInSeconds } from "date-fns";
 import * as zod from 'zod'
 
 import { CountdownContainer,
@@ -20,8 +22,20 @@ const createNewCicleFormValidationSchema = zod.object({
 
 type NewCicleFormData  = zod.infer<typeof createNewCicleFormValidationSchema>
 
-export function Home() {
+interface Cycle {
+    id: string,
+    task: string,
+    time: number,
+    startDate: Date
+}
 
+export function Home() {
+    
+    const [cycles, setCycles] = useState<Cycle[]>([])
+    const [activeCycleId, setActiveCycleId] = useState<string | null>(null)
+    const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
+    
+    
     const { register, handleSubmit, watch, reset } = useForm<NewCicleFormData>({
         resolver: zodResolver(createNewCicleFormValidationSchema),
         defaultValues: {
@@ -29,15 +43,48 @@ export function Home() {
             time: 0
         }
     })
+    
+    const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
+    console.log(activeCycle)
+    
+    useEffect(() => {
+        if (activeCycle) {
+            setInterval(() => {
+                setAmountSecondsPassed(differenceInSeconds(new Date(), activeCycle.startDate))
+            }) 
+        }
+    }, [activeCycle])
 
     const handleCreateNewCicle = (data: NewCicleFormData) => {
-        console.log(data)
+
+        const id = String(new Date().getTime)
+        
+        const newCycle: Cycle = {
+            id,
+            task: data.task,
+            time: data.time,
+            startDate: new Date()
+        }
+
+        setCycles((state) => [...state, newCycle])
+        setActiveCycleId(id)
+
         reset()
     }
 
     const task = watch('task')
     const time = watch('time')
     const isSubmitDisabled = !task || !time
+
+
+    const totalTimeInSeconds = activeCycle ? activeCycle.time * 60 : 0
+    const currentSeconds = activeCycle ? totalTimeInSeconds - amountSecondsPassed : 0
+
+    const timeInMinutes = Math.floor(currentSeconds / 60)
+    const timeInSeconds = currentSeconds % 60
+
+    const minutes = String(timeInMinutes).padStart(2, '0')
+    const seconds = String(timeInSeconds).padStart(2, '0')
 
     return (
         <HomeContainer>
@@ -70,11 +117,11 @@ export function Home() {
                     <span>minutos.</span>
                 </FormContainer>
                 <CountdownContainer>
-                    <span>0</span>
-                    <span>0</span>
+                    <span>{minutes[0]}</span>
+                    <span>{minutes[1]}</span>
                     <Separator>:</Separator>
-                    <span>0</span>
-                    <span>0</span>
+                    <span>{seconds[0]}</span>
+                    <span>{seconds[1]}</span>
                 </CountdownContainer>
                 <StartCountdownButton type="submit" disabled={isSubmitDisabled}>
                     <Play size={24}/>
