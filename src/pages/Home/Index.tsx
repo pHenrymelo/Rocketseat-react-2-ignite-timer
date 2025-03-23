@@ -61,6 +61,8 @@ export function Home() {
 
     }, [activeCycle])
 
+    
+
     const handleCreateNewCicle = (data: NewCicleFormData) => {
         const id = String(new Date().getTime())
         
@@ -91,6 +93,12 @@ export function Home() {
 
     const minutes = String(timeInMinutes).padStart(2, '0')
     const seconds = String(timeInSeconds).padStart(2, '0')
+
+    useEffect(()=> {
+        if(activeCycle) {
+            document.title = `${minutes}:${seconds} `
+        }
+    }, [minutes, seconds, activeCycle])
 
     return (
         <HomeContainer>
