@@ -27,8 +27,9 @@ interface Cycle {
     id: string,
     task: string,
     time: number,
-    startDate: Date
-    interuptDate?: Date
+    startDate: Date,
+    interuptDate?: Date,
+    finishedDate?: Date
 }
 
 export function Home() {
@@ -49,20 +50,6 @@ export function Home() {
     const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
     console.log(activeCycle)
 
-    useEffect(() => {
-        let interval: number;
-
-        if (activeCycle) {
-            interval = setInterval(() => {
-                setAmountSecondsPassed(differenceInSeconds(new Date(), activeCycle.startDate))
-            }, 1000) 
-        }
-        return () => {
-            clearInterval(interval)
-        }
-
-    }, [activeCycle])
-
     const handleCreateNewCicle = (data: NewCicleFormData) => {
         const id = String(new Date().getTime())
         
@@ -82,8 +69,8 @@ export function Home() {
 
     const handleStopCountdown = () => {
 
-        setCycles(
-            cycles.map((cycle) => {
+        setCycles(state =>
+            state.map((cycle) => {
                 if(cycle.id === activeCycleId) {
                     return {...cycle, interuptDate: new Date()}
                 } else {
@@ -94,8 +81,6 @@ export function Home() {
 
         setActiveCycleId(null)
     }
-
-    console.log(cycles)
 
     const task = watch('task')
     const time = watch('time')
@@ -110,6 +95,37 @@ export function Home() {
 
     const minutes = String(timeInMinutes).padStart(2, '0')
     const seconds = String(timeInSeconds).padStart(2, '0')
+
+    useEffect(() => {
+        let interval: number
+
+        if (activeCycle) {
+            interval = setInterval(() => {
+                const secondsDifference = differenceInSeconds(new Date(), activeCycle.startDate)
+
+                if(secondsDifference >= totalTimeInSeconds){
+                    setCycles(state =>
+                        state.map((cycle) => {
+                            if(cycle.id === activeCycleId) {
+                                return {...cycle, finishedDate: new Date()}
+                            } else {
+                                return cycle
+                            }
+                        })
+                    )  
+                    setAmountSecondsPassed(totalTimeInSeconds)
+                    clearInterval(interval)         
+                    setActiveCycleId(null)
+                } else {
+                    setAmountSecondsPassed(secondsDifference)
+                }
+            }, 1000)
+            return () => {
+                clearInterval(interval)
+            }
+        }
+
+    }, [activeCycle, totalTimeInSeconds, activeCycleId])
 
     useEffect(()=> {
         if(activeCycle) {
