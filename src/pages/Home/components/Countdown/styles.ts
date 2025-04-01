@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const CountdownContainer = styled.div`
     font-family: 'Roboto Mono', monospace;
+    font-weight: bold;
     font-size: 10rem;
     line-height: 8rem;
     color: ${(props)=> props.theme["gray-100"]};

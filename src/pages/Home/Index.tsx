@@ -17,7 +17,7 @@ from "./styles";
 
 const createNewCicleFormValidationSchema = zod.object({
     task: zod.string().min(1, 'A task deve ser inserida corretamente'),
-    time: zod.number().min(5, 'o tempo deve ser superior a  minutos').max(60, 'o tempo deve ser inferior a 60 minutos')
+    time: zod.number().min(5, 'o tempo deve ser superior a 5 minutos').max(60, 'o tempo deve ser inferior a 60 minutos')
 })
 
 type NewCicleFormData  = zod.infer<typeof createNewCicleFormValidationSchema>
