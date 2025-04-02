@@ -11,9 +11,7 @@ import {
     HomeContainer,
     StartCountdownButton, 
     StopCountdownButton,    
-} 
-
-from "./styles";
+} from "./styles";
 
 const createNewCicleFormValidationSchema = zod.object({
     task: zod.string().min(1, 'A task deve ser inserida corretamente'),
@@ -62,7 +60,7 @@ export function Home() {
     const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
     console.log(activeCycle)
 
-    const markCurrentCycleAsFinished = () => {
+    function markCurrentCycleAsFinished(){
         setCycles(state =>
             state.map((cycle) => {
                 if(cycle.id === activeCycleId) {
@@ -74,15 +72,15 @@ export function Home() {
         )  
     }
 
-    const cleanActiveCycle = () => {
+    function cleanActiveCycle(){
         setActiveCycleId(null)
     }
 
-    const setSecondsPassed = (senconds: number) => {
+    function setSecondsPassed(senconds: number){
         setAmountSecondsPassed(senconds)
     }
     
-    const handleCreateNewCicle = (data: NewCicleFormData) => {
+    function handleCreateNewCicle(data: NewCicleFormData){
         const id = String(new Date().getTime())
         
         const newCycle: Cycle = {
@@ -99,8 +97,7 @@ export function Home() {
         reset()
     }
 
-    const handleStopCountdown = () => {
-
+    function handleStopCountdown() {
         setCycles(state =>
             state.map((cycle) => {
                 if(cycle.id === activeCycleId) {
@@ -121,7 +118,14 @@ export function Home() {
     return (
         <HomeContainer>
             <form onSubmit={handleSubmit(handleCreateNewCicle)}>
-                <CyclesContext.Provider value={{ activeCycle, activeCycleId, markCurrentCycleAsFinished, cleanActiveCycle, amountSecondsPassed, setSecondsPassed }}>
+                <CyclesContext.Provider 
+                    value={{ activeCycle, 
+                            activeCycleId, 
+                            markCurrentCycleAsFinished, 
+                            cleanActiveCycle, 
+                            amountSecondsPassed, 
+                            setSecondsPassed 
+                    }}>
                     <FormProvider {...newCycleForm}>
                         <NewCyleForm /> 
                     </FormProvider>
