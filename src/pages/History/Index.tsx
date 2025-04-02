@@ -22,7 +22,9 @@ export function History() {
                 </thead>
                 <tbody>
                     {
-                        cycles.map(cycle => {
+                        cycles
+                        .sort((a, b) => b.startDate.getTime() - a.startDate.getTime())
+                        .map(cycle => {
                             return(
                             <tr key={cycle.id}>
                                 <td>{cycle.task}</td>
