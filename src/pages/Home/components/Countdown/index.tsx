@@ -5,7 +5,7 @@ import { CyclesContext } from "../../../../contexts/CyclesContext";
 
 export function Countdown() {
 
-    const {activeCycle, activeCycleId, markCurrentCycleAsFinished, cleanActiveCycle, amountSecondsPassed, setSecondsPassed} = useContext(CyclesContext)
+    const {activeCycle, activeCycleId, markCurrentCycleAsFinished, amountSecondsPassed, setSecondsPassed} = useContext(CyclesContext)
 
     const totalTimeInSeconds = activeCycle ? activeCycle.time * 60 : 0
     const currentSeconds = activeCycle ? totalTimeInSeconds - amountSecondsPassed : 0
@@ -27,7 +27,6 @@ export function Countdown() {
                     markCurrentCycleAsFinished()
                     setSecondsPassed(totalTimeInSeconds)
                     clearInterval(interval)
-                    cleanActiveCycle()         
                 } else {
                     setSecondsPassed(secondsDifference)
                 }
@@ -37,7 +36,7 @@ export function Countdown() {
             }
         }
 
-    }, [activeCycle, totalTimeInSeconds, activeCycleId, setSecondsPassed, cleanActiveCycle, markCurrentCycleAsFinished])
+    }, [activeCycle, totalTimeInSeconds, activeCycleId, setSecondsPassed, markCurrentCycleAsFinished])
 
     useEffect(()=> {
         if(activeCycle) {
